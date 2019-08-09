@@ -22,28 +22,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Observable<Long> observable = Observable.interval(100, TimeUnit.MILLISECONDS);
-        Observable<Long> observable1 = Observable.interval(150, TimeUnit.MILLISECONDS);
-        Observable.combineLatest(observable, observable1, (observable1Times, observable2Times) ->
-                "Refreshed Observable1: " + observable1Times + " refreshed Observable2: " + observable2Times)
-                .subscribe(item -> System.out.println(item));
-        
-        SingleObserver<Long> longObserver = new SingleObserver<Long>() {
-            
+        Observable.range(2, 5).repeat(2).subscribe(new Observer<Integer>() {
             @Override
             public void onSubscribe(Disposable d) {
             
             }
             
             @Override
-            public void onSuccess(Long aLong) {
-            
+            public void onNext(Integer integer) {
+                Log.d(TAG, "onNext: " + integer);
             }
             
             @Override
             public void onError(Throwable e) {
             
             }
-        };
+            
+            @Override
+            public void onComplete() {
+            
+            }
+        });
     }
 }
