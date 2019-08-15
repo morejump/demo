@@ -5,22 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
+import mj.apps.demo.Models.Post;
+import mj.apps.demo.Models.User;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -32,44 +26,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*
-         * There are 2 Observables each emitting values after an interval of 100 ms and 150 ms
-         * respectively. The combineLatest() operator combines both the observables and
-         * emits the result at each particular intervals.
-         
-//         */
-//        Observable<Long> observable1 = Observable.interval(2, TimeUnit.SECONDS);
-//        Observable<Long> observable2 = Observable.interval(1, TimeUnit.SECONDS);
-//
-//        Observable.combineLatest(observable1, observable2,
-//                (observable1Times, observable2Times) ->
-//                        "Refreshed Observable1: " + observable1Times + " refreshed Observable2: " + observable2Times)
-//                .subscribe(item -> System.out.println(item));
-        String loginUserName = "morejump";
         
-        Retrofit repo = new Retrofit.Builder()
-                .baseUrl("https://api.github.com")
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://jsonplaceholder.typicode.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-        
-        Observable<JsonObject> observable = repo
-                .create(GitHubUser.class)
-                .getuser(loginUserName)
+
+        Observable<User> observable = retrofit
+                .create(GetUser.class)
+                .getuser("1")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
         
-        Observable<JsonArray> observable3 = repo
-                .create(GitHubEvents.class)
-                .listEvents(loginUserName)
+        Observable<Post> observable2 = retrofit
+                .create(GetPost.class)
+                .getPost(1)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
+               
+
+        Observable<UserAndPost> combined = Observable.zip(observable, observable2, (jsonObject, jsonObject1) -> new UserAndPost(jsonObject, jsonObject1));
+
+        combined.subscribe(new Observer<UserAndPost>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: ");
+            }
+
+            @Override
+            public void onNext(UserAndPost userAndEvents) {
+                Log.d(TAG, "onNext: "+ userAndEvents.post.getTitle() + ": "+ userAndEvents.user.getName());
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "onError: ");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: ");
+            }
+        });
         
-      Observable<UserAndEvents> userAndEventsObservable =  Observable.zip(observable, observable3, new BiFunction<JsonObject, JsonArray, UserAndEvents>() {
-          @Override
-          public UserAndEvents apply(JsonObject jsonObject, JsonArray jsonElements) throws Exception {
-              return new UserAndEvents();
-          }
-      });
     }
 }
