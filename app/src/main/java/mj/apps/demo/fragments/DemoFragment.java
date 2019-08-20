@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import mj.apps.demo.R;
+
 public class DemoFragment extends Fragment {
     public static final String INTEGER_KEY = "INTEGER_KEY";
     
@@ -32,7 +34,7 @@ public class DemoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return inflater.inflate(R.layout.fragment_foo, container, false);
     }
     
     @Override

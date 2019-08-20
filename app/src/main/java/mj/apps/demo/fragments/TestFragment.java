@@ -7,10 +7,19 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import mj.apps.demo.R;
 
-public class FooFragment extends androidx.fragment.app.Fragment {
+public class TestFragment extends Fragment {
+    
+    public static TestFragment newInsance(String title) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("thao handsome", 1);
+        TestFragment testFragment = new TestFragment();
+        testFragment.setArguments(bundle);
+        return testFragment;
+    }
     
     @Nullable
     @Override
@@ -22,5 +31,4 @@ public class FooFragment extends androidx.fragment.app.Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
-    
 }
