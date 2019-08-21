@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_bottom_first"
+        android:icon="@drawable/ic_sentiment_dissatisfied_black_24dp"
+        android:title="first" />
+    <item
+        android:id="@+id/nav_bottom_second"
+        android:icon="@drawable/ic_sentiment_neutral_black_24dp"
+        android:title="second" />
+
+    <item
+        android:id="@+id/nav_bottom_third"
+        android:icon="@drawable/ic_sentiment_satisfied_black_24dp"
+        android:title="third" />
+</menu>
