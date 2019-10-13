@@ -1,103 +1,55 @@
 package mj.apps.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.widget.Button;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 
-import com.google.gson.JsonObject;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import mj.apps.demo.Models.Post;
-import mj.apps.demo.Models.User;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
-    
+
     private static final String TAG = MainActivity.class.getSimpleName();
-    
+    Button btnShowDialog;
+    ViewPager viewPager;
+    MyPagerAdapter myPagerAdapter;
+    TabLayout tabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Single<List<Post>> observable = Client.getAPI().getPosts();
-        Single<List<Photo>> observable1 = Client.getAPI().getPhotos();
-
-        Single.zip(observable, observable1, (posts, photos) -> "")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<String>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(String aVoid) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-                });
-
-    }
-
-    private void getData(List<Post> posts, List<Photo> photos) {
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-
-        Observable<User> observable = retrofit
-                .create(GetUser.class)
-                .getuser("1")
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
-
-        Observable<Post> observable2 = retrofit
-                .create(GetPost.class)
-                .getPost(1)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
-
-
-        Observable<UserAndPost> combined = Observable.zip(observable, observable2, (jsonObject, jsonObject1) -> new UserAndPost(jsonObject, jsonObject1));
-
-        combined.subscribe(new Observer<UserAndPost>() {
+        viewPager = findViewById(R.id.view_pager);
+        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myPagerAdapter);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            myPagerAdapter.getFirstFragment().getTabLayout().setupWithViewPager(viewPager);
+            Log.d(TAG, "run: ");
+        }, 200);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onSubscribe(Disposable d) {
-                Log.d(TAG, "onSubscribe: ");
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
             @Override
-            public void onNext(UserAndPost userAndEvents) {
-                Log.d(TAG, "onNext: "+ userAndEvents.post.getTitle() + ": "+ userAndEvents.user.getName());
-
+            public void onPageSelected(int position) {
+                Log.d(TAG, "onPageSelected: " + position);
+                myPagerAdapter.getCurrentFragment().getTabLayout().setupWithViewPager(viewPager);
             }
 
             @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "onError: ");
-            }
+            public void onPageScrollStateChanged(int state) {
 
-            @Override
-            public void onComplete() {
-                Log.d(TAG, "onComplete: ");
             }
         });
-
     }
 }
