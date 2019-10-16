@@ -6,13 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:id="@+id/firstView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#E82F2F" />
+
+    <View
+        android:id="@+id/secondview"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#E8E62F"
+        app:layout_constraintLeft_toRightOf="@id/firstView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
